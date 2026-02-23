@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Hawaiʻi 2026 🌺</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0f0d;
+  --surface: #141a17;
+  --surface2: #1c2420;
+  --card: #1e2824;
+  --text: #e8ede9;
+  --text-muted: #8a9b8f;
+  --accent: #4fd1a5;
+  --accent2: #f4a261;
+  --accent3: #e76f51;
+  --lava: #e63946;
+  --ocean: #48cae4;
+  --sand: #dda15e;
+  --palm: #4fd1a5;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --font-body: 'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --border: rgba(255,255,255,0.06);
+  --border-subtle: rgba(255,255,255,0.04);
+  --header-bg: rgba(10,15,13,0.88);
+  --tabs-bg: rgba(10,15,13,0.92);
+  --map-filter: invert(90%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}
+
+[data-theme="light"] {
+  --bg: #faf8f5;
+  --surface: #f0ece6;
+  --surface2: #e8e3db;
+  --card: #ffffff;
+  --text: #1c1917;
+  --text-muted: #78716c;
+  --accent: #0f9d71;
+  --accent2: #c2650a;
+  --accent3: #c0392b;
+  --lava: #c0392b;
+  --ocean: #0878a1;
+  --sand: #a34505;
+  --palm: #0f9d71;
+  --shadow: 0 4px 24px rgba(0,0,0,0.06);
+  --border: rgba(0,0,0,0.08);
+  --border-subtle: rgba(0,0,0,0.05);
+  --header-bg: rgba(250,248,245,0.92);
+  --tabs-bg: rgba(250,248,245,0.95);
+  --map-filter: none;
+}
+
+/* ═══ THEME TOGGLE ═══ */
+.theme-toggle {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.theme-toggle:active { transform: scale(0.9); }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+/* ═══ HEADER ═══ */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--header-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(79,209,165,0.1);
+  padding: 12px 16px;
+}
+
+.header-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 600px; margin: 0 auto;
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--palm), var(--ocean));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-dates {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ═══ DAY TABS ═══ */
+.day-tabs-wrapper {
+  position: sticky; top: 52px; z-index: 99;
+  background: var(--tabs-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(79,209,165,0.08);
+}
+
+.day-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 8px 12px;
+  gap: 6px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.day-tabs::-webkit-scrollbar { display: none; }
+
+.day-tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  position: relative;
+}
+
+.day-tab .tab-label {
+  font-size: 0.68rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.day-tab.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(79,209,165,0.3);
+}
+
+.day-tab.active .tab-label { opacity: 1; }
+
+/* ═══ MAIN CONTENT ═══ */
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 0 100px 0;
+}
+
+/* ═══ DAY HEADER ═══ */
+.day-header {
+  padding: 24px 16px 16px;
+}
+
+.day-header .day-emoji {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.day-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.day-header .day-subtitle {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.day-header .day-lodging {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  color: var(--accent2);
+}
+
+/* ═══ MAP ═══ */
+.map-container {
+  margin: 0 12px 16px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  height: 260px;
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.map-container iframe {
+  width: 100%; height: 100%;
+  border: 0;
+  filter: var(--map-filter);
+}
+
+.map-overlay {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  z-index: 5;
+}
+
+.map-overlay a {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: transform 0.2s;
+}
+.map-overlay a:active { transform: scale(0.95); }
+
+/* ═══ TIMELINE ═══ */
+.timeline {
+  padding: 0 12px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.timeline-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 28px;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.timeline-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.timeline-dot.food { background: var(--accent2); }
+.timeline-dot.travel { background: var(--ocean); }
+.timeline-dot.lodging { background: var(--accent3); }
+.timeline-dot.beach { background: var(--sand); }
+.timeline-dot.lava { background: var(--lava); }
+
+.timeline-stem {
+  width: 2px;
+  flex-grow: 1;
+  background: rgba(79,209,165,0.15);
+  margin-top: 4px;
+}
+
+.timeline-card {
+  flex: 1;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s;
+}
+.timeline-card:active { transform: scale(0.985); }
+
+.timeline-time {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.timeline-time.food-time { color: var(--accent2); }
+.timeline-time.travel-time { color: var(--ocean); }
+
+.timeline-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.timeline-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.timeline-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.tag {
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.tag-must { background: rgba(79,209,165,0.15); color: var(--accent); }
+.tag-maybe { background: var(--border); color: var(--text-muted); }
+.tag-food { background: rgba(244,162,97,0.15); color: var(--accent2); }
+.tag-free { background: rgba(72,202,228,0.15); color: var(--ocean); }
+.tag-paid { background: rgba(221,161,94,0.15); color: var(--sand); }
+.tag-time { background: var(--border); color: var(--text-muted); }
+.tag-hike { background: rgba(79,209,165,0.12); color: var(--palm); }
+
+.timeline-actions {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: none; cursor: pointer;
+}
+
+.action-btn.navigate {
+  background: rgba(72,202,228,0.12);
+  color: var(--ocean);
+}
+
+.action-btn.info {
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.action-btn:active { transform: scale(0.95); }
+
+/* ═══ FOOD SECTION ═══ */
+.food-section {
+  margin: 16px 12px;
+  background: linear-gradient(135deg, rgba(244,162,97,0.08), rgba(230,99,81,0.06));
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(244,162,97,0.12);
+}
+
+.food-section h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent2);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.food-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.food-item:last-child { border-bottom: none; }
+
+.food-item-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.food-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.food-item-link {
+  flex-shrink: 0;
+  color: var(--ocean);
+  font-size: 0.72rem;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(72,202,228,0.1);
+}
+
+/* ═══ SECTION DIVIDER ═══ */
+.section-divider {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 16px 12px;
+}
+
+.section-divider span {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ═══ PACKING / INFO SECTIONS ═══ */
+.info-card {
+  margin: 12px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+}
+
+.info-card h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.info-chip {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  background: var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
+/* ═══ FLIGHT CARD ═══ */
+.flight-card {
+  margin: 12px;
+  background: linear-gradient(135deg, var(--surface2), rgba(72,202,228,0.06));
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid rgba(72,202,228,0.12);
+}
+
+.flight-route {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.flight-airport {
+  text-align: center;
+}
+
+.flight-code {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.flight-city {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.flight-line {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.flight-line-inner {
+  width: 100%;
+  height: 1px;
+  background: rgba(72,202,228,0.3);
+  position: relative;
+}
+
+.flight-line-inner::after {
+  content: '✈';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+}
+
+.flight-meta {
+  display: flex; gap: 16px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.flight-meta strong { color: var(--text); }
+
+/* ═══ OVERVIEW (Day 0) ═══ */
+.overview-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 0 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+  border: 1px solid var(--border-subtle);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.island-card {
+  margin: 12px;
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.island-card.bigisland {
+  background: linear-gradient(135deg, rgba(230,57,70,0.1), rgba(79,209,165,0.08));
+}
+
+.island-card.oahu {
+  background: linear-gradient(135deg, rgba(72,202,228,0.1), rgba(244,162,97,0.08));
+}
+
+.island-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.island-card p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ═══ COLLAPSIBLE ═══ */
+.collapsible-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
+  background: none; border: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.collapsible-trigger .chevron {
+  transition: transform 0.3s;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.collapsible-trigger.open .chevron {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-content.open {
+  max-height: 2000px;
+}
+
+/* ═══ DAY PAGE VISIBILITY ═══ */
+.day-page { display: none; }
+.day-page.active { display: block; animation: fadeIn 0.25s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ NOTES BAR ═══ */
+.notes-bar {
+  margin: 12px;
+  padding: 12px 14px;
+  background: rgba(79,209,165,0.08);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.notes-bar strong { color: var(--accent); }
+
+/* ═══ HOTEL CARD ═══ */
+.hotel-card {
+  margin: 0 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  border: 1px solid var(--border-subtle);
+}
+
+.hotel-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.hotel-info { flex: 1; }
+
+.hotel-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.hotel-detail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.hotel-nav {
+  color: var(--ocean);
+  font-size: 0.72rem;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(72,202,228,0.1);
+  flex-shrink: 0;
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (min-width: 640px) {
+  .main { padding: 0 0 60px; }
+  .map-container { height: 320px; }
+}
+</style>
+<meta name="theme-color" content="#0a0f0d" id="themeColor">
+<script>(function(){var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';if(t==='light'){document.documentElement.setAttribute('data-theme','light');var m=document.getElementById('themeColor');if(m)m.content='#faf8f5'}})()</script>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div>
+      <h1>Hawaiʻi 2026 🌺</h1>
+      <div class="header-dates">Feb 27 – Mar 7 · Big Island & Oʻahu</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
+  </div>
+</header>
+
+<nav class="day-tabs-wrapper">
+  <div class="day-tabs" id="dayTabs"></div>
+</nav>
+
+<main class="main" id="mainContent"></main>
+
+<script>
+// ═══════════════════════════════════════════
+// TRIP DATA
+// ═══════════════════════════════════════════
+const TRIP = {
+  days: [
+    // ─── OVERVIEW ───
+    {
+      id: 'overview',
+      tabLabel: '🗺️',
+      tabSub: 'Trip',
+      title: 'Trip Overview',
+      emoji: '🌺',
+      subtitle: 'Feb 27 – Mar 7, 2026',
+      type: 'overview'
+    },
+    // ─── DAY 1: FRI FEB 27 ───
+    {
+      id: 'day1',
+      tabLabel: 'Fri',
+      tabSub: '2/27',
+      date: 'Friday, February 27',
+      title: 'Arrival → Volcano',
+      emoji: '✈️',
+      subtitle: 'SFO → Kona · Drive to Volcano',
+      lodging: { name: 'Volcano Inn', addr: '19-3820 Old Volcano Rd, Volcano, HI 96785', checkin: '3:00 PM' },
+      mapWaypoints: ['Kona+International+Airport+HI', 'Volcano+Inn+19-3820+Old+Volcano+Rd+Volcano+HI'],
+      items: [
+        { time: '9:05 AM PST', title: 'Depart SFO → Kona', subtitle: 'United UA 1721 · Conf: LLNP3P', type: 'travel', tags: ['flight'], isFlight: true, flightFrom: 'SFO', flightTo: 'KOA', flightArrive: '12:59 PM HST' },
+        { time: '1:00 PM', title: 'Pick up Turo – Jeep Gladiator', subtitle: 'Kona International Airport', type: 'travel', tags: [], gmaps: 'Kona+International+Airport' },
+        { time: '1:30–2:15 PM', title: 'Quick Lunch near Airport', subtitle: 'Grab food before the drive', type: 'food', tags: ['food'] },
+        { time: '2:15–5:00 PM', title: 'Drive Kona → Volcano', subtitle: 'South route via Hwy 11 · ~2.5 hrs', type: 'travel', tags: ['~2.5 hr drive'], gmaps: 'Volcano+Inn+19-3820+Old+Volcano+Rd+Volcano+HI' },
+        { time: '5:00 PM', title: 'Check in Volcano Inn', subtitle: '19-3820 Old Volcano Rd, Volcano, HI 96785', type: 'lodging', tags: [], gmaps: '19-3820+Old+Volcano+Rd+Volcano+HI+96785' },
+        { time: 'Evening', title: 'Explore Volcano Village', subtitle: 'Light walk, early dinner, rest up for big day tomorrow', type: 'default', tags: ['take it easy'] },
+      ],
+      food: [
+        { name: 'Tuk Tuk Thai Food Truck', desc: 'Near Volcano Village', q: 'Tuk+Tuk+Thai+Volcano+Hawaii' },
+        { name: 'Aloha Mix Food Truck', desc: 'Near black sand beach area', q: 'Aloha+Mix+Food+Truck+Hawaii' },
+      ]
+    },
+    // ─── DAY 2: SAT FEB 28 ───
+    {
+      id: 'day2',
+      tabLabel: 'Sat',
+      tabSub: '2/28',
+      date: 'Saturday, February 28',
+      title: 'Volcanoes National Park',
+      emoji: '🌋',
+      subtitle: 'The BIG day – Full park exploration',
+      lodging: { name: 'Volcano Inn', addr: '19-3820 Old Volcano Rd, Volcano, HI 96785' },
+      mapWaypoints: ['Steam+Vents+Hawaii+Volcanoes+National+Park', 'Kilauea+Overlook+Hawaii', 'Uekahuna+viewpoint+Hawaii', 'Nahuku+Thurston+Lava+Tube', 'Kilauea+Iki+Trail+Hawaii', 'Chain+of+Craters+Road+Hawaii', 'Holei+Sea+Arch+Hawaii'],
+      items: [
+        { time: '8:40 AM', title: 'Leave Volcano Inn', subtitle: 'Head to park entrance', type: 'travel', tags: [] },
+        { time: '9:00–9:25 AM', title: 'Steam Vents', subtitle: 'Walk the boardwalk · Easy warm-up stop', type: 'default', tags: ['must-do', '25 min'], gmaps: 'Steam+Vents+Hawaii+Volcanoes+National+Park' },
+        { time: '9:30–9:50 AM', title: 'Kīlauea Overlook', subtitle: 'Crater views + photos', type: 'default', tags: ['must-do', '20 min'], gmaps: 'Kilauea+Overlook+Hawaii+Volcanoes+National+Park' },
+        { time: '9:55–10:20 AM', title: 'Uēkahuna Viewpoint', subtitle: 'Walk to viewpoints · Bathrooms available', type: 'default', tags: ['must-do', '25 min', '🚻'], gmaps: 'Uekahuna+viewpoint+Hawaii+Volcanoes' },
+        { time: '10:25–10:45 AM', title: 'Thurston Lava Tube (Nāhuku)', subtitle: 'Walk through lava tube + rainforest loop', type: 'lava', tags: ['must-do', '20 min'], gmaps: 'Nahuku+Thurston+Lava+Tube+Hawaii' },
+        { time: '10:50 AM–1:30 PM', title: 'Kīlauea Iki Trail', subtitle: '4-mile loop · Forest → crater floor → rim · Like the surface of the moon!', type: 'lava', tags: ['must-do', 'main hike', '~2.5 hrs', '🥾'], gmaps: 'Kilauea+Iki+Trail+Hawaii+Volcanoes' },
+        { time: '1:30–1:50 PM', title: 'Kīlauea Iki Overlook', subtitle: 'Best perspective after hiking the crater', type: 'default', tags: ['must-do', '20 min'], gmaps: 'Kilauea+Iki+Overlook+Hawaii' },
+        { time: '1:50–2:30 PM', title: 'Lunch Break', subtitle: 'Picnic at trailhead or Volcano House café', type: 'food', tags: ['food'], gmaps: 'Volcano+House+Hawaii+Volcanoes+National+Park' },
+        { time: '2:30–4:00 PM', title: 'Chain of Craters Road', subtitle: 'Scenic drive toward coast · Stop at pull-offs as you like', type: 'default', tags: ['must-do', 'scenic drive'], gmaps: 'Chain+of+Craters+Road+Hawaii' },
+        { time: '4:00–6:15 PM', title: 'Hōlei Sea Arch (Sunset! 🌅)', subtitle: 'End-of-road lot · Walk to arch · Relax & photos · Sunset ~6:30 PM', type: 'default', tags: ['must-do', 'sunset spot'], gmaps: 'Holei+Sea+Arch+Hawaii' },
+        { time: 'Evening', title: 'Return to Volcano Inn', subtitle: 'Drive ~45 min back · Dinner & rest', type: 'lodging', tags: [] },
+      ],
+      food: [
+        { name: 'Volcano House', desc: 'Café inside the park', q: 'Volcano+House+Restaurant+Hawaii' },
+        { name: 'Tuk Tuk Thai Food Truck', desc: 'Near Volcano Village', q: 'Tuk+Tuk+Thai+Volcano+Hawaii' },
+      ],
+      notes: '💡 Park entry: $30/car (valid 7 days). This route minimizes parking changes — Lava Tube + Kīlauea Iki share the same zone. Bring 2–3L water, snacks, rain jacket, and hiking shoes.'
+    },
+    // ─── DAY 3: SUN MAR 1 ───
+    {
+      id: 'day3',
+      tabLabel: 'Sun',
+      tabSub: '3/1',
+      date: 'Sunday, March 1',
+      title: 'Hilo Waterfalls & Town',
+      emoji: '🌧️',
+      subtitle: 'Recovery day – waterfalls & farmers market',
+      lodging: { name: 'Volcano Village Lodge', addr: '19-4183 Kawailehua Road Volcano, HI 96785', checkin: '3:00 PM' },
+      mapWaypoints: ['Onomea+Bay+Trail+Papaikou+HI', 'Hawaii+Tropical+Botanical+Garden', 'Akaka+Falls+State+Park', 'Hilo+Farmers+Market', '19-4183+Kawailehua+Road+Volcano+HI'],
+      items: [
+        { time: '10:00 AM', title: 'Check out Volcano Inn', subtitle: 'Drive toward Hilo', type: 'travel', tags: [] },
+        { time: '~11:00 AM', title: 'Onomea Bay Trail', subtitle: '27-547 Amalaha Hwy, Papaʻikou · Coastal walk', type: 'default', tags: ['30–45 min', 'free'], gmaps: 'Onomea+Bay+Trail+Papaikou+HI' },
+        { time: '~11:45 AM', title: 'Hawaiʻi Tropical Botanical Garden', subtitle: '1.5–2 hrs · Beautiful garden with beach inside!', type: 'default', tags: ['must-do', '1.5–2 hrs', 'paid'], gmaps: 'Hawaii+Tropical+Botanical+Garden' },
+        { time: '~2:00 PM', title: 'Akaka Falls State Park', subtitle: 'Classic 135m waterfall · $5/person + $10 parking', type: 'default', tags: ['must-do', '~1 hr', '$5+$10'], gmaps: 'Akaka+Falls+State+Park+Hawaii' },
+        { time: '~3:15 PM', title: 'Hilo Downtown & Farmers Market', subtitle: 'Lunch, groceries, explore the town', type: 'default', tags: ['must-do', '1–2 hrs'], gmaps: 'Hilo+Farmers+Market+Hawaii' },
+        { time: 'Late Afternoon', title: 'Drive back toward Volcano', subtitle: 'Check in Volcano Village Lodge', type: 'lodging', tags: [], gmaps: '19-4183+Kawailehua+Road+Volcano+HI+96785' },
+        { time: 'Evening', title: 'Quiet night, early sleep', subtitle: 'Rest up for beach day tomorrow', type: 'default', tags: [] },
+      ],
+      food: [
+        { name: 'Tenkatori Hilo', desc: 'Fried chicken', q: 'Tenkatori+Hilo+Hawaii' },
+        { name: 'Pineapples Island Fresh Cuisine', desc: 'Fresh island food', q: 'Pineapples+Island+Fresh+Cuisine+Hilo' },
+        { name: 'Tetsumen', desc: 'Ramen', q: 'Tetsumen+Hilo+Hawaii' },
+      ],
+      maybes: [
+        { name: 'Rainbow Falls', desc: '20–30 min, very close to Hilo, free', q: 'Rainbow+Falls+Hilo+Hawaii' },
+        { name: 'ʻUmaʻuma Falls', desc: 'Parking $10, short walk', q: 'Umauma+Falls+Hawaii' },
+        { name: 'Waipiʻo Valley Lookout', desc: '30–45 min, but long drive north', q: 'Waipio+Valley+Lookout+Hawaii' },
+        { name: 'Kaimana Caves', desc: 'Dark and slippery – adventurous!', q: 'Kaimana+Caves+Hilo+Hawaii' },
+      ]
+    },
+    // ─── DAY 4: MON MAR 2 ───
+    {
+      id: 'day4',
+      tabLabel: 'Mon',
+      tabSub: '3/2',
+      date: 'Monday, March 2',
+      title: 'Black Sand Beaches → Kona',
+      emoji: '🖤',
+      subtitle: 'Beach day + drive to Kona side',
+      lodging: { name: 'Airbnb – Captain Cook', addr: '82-5680 Kahau Pl, Captain Cook, HI 96704', checkin: '3:00 PM' },
+      mapWaypoints: ['Kehena+Black+Sand+Beach+Hawaii', 'Punaluu+Black+Sand+Beach+Hawaii', 'South+Kona+Fruit+Stand', '82-5680+Kahau+Place+Captain+Cook+HI', 'Kua+Bay+Maniniowali+Beach+Hawaii'],
+      items: [
+        { time: '11:00 AM', title: 'Check out Volcano Village Lodge', subtitle: 'Head south toward beaches', type: 'travel', tags: [] },
+        { time: '~12:00 PM', title: 'Kehena Black Sand Beach', subtitle: 'Short visit · Secluded beach near Pāhoa', type: 'beach', tags: ['maybe', '30–45 min'], gmaps: 'Kehena+Black+Sand+Beach+Hawaii' },
+        { time: '~1:00 PM', title: 'Punaluʻu Black Sand Beach', subtitle: 'Famous black sand beach · Sea turtles! 🐢', type: 'beach', tags: ['must-do', '~1 hr'], gmaps: 'Punaluu+Black+Sand+Beach+Hawaii' },
+        { time: '~2:30 PM', title: 'South Kona Fruit Stand', subtitle: 'Quick stop for fresh fruit on the drive', type: 'food', tags: ['food', 'quick stop'], gmaps: 'South+Kona+Fruit+Stand+Hawaii' },
+        { time: '~3:00 PM', title: 'Check in Airbnb', subtitle: '82-5680 Kahau Pl, Captain Cook, HI 96704 · Kealakekua Bay area', type: 'lodging', tags: [], gmaps: '82-5680+Kahau+Place+Captain+Cook+HI+96704' },
+        { time: 'Late Afternoon', title: 'Kua Bay (Maniniʻōwali Beach) 🌅', subtitle: 'Beautiful sunset beach spot', type: 'beach', tags: ['must-do', 'sunset spot'], gmaps: 'Kua+Bay+Maniniowali+Beach+Hawaii' },
+      ],
+      food: [
+        { name: 'South Kona Fruit Stand', desc: 'Fresh fruit, quick stop', q: 'South+Kona+Fruit+Stand+Hawaii' },
+        { name: 'Pa\'akai Poke & Deli', desc: 'Poke bowls', q: 'Paakai+Poke+Deli+Kona+Hawaii' },
+        { name: 'Braoke Da Mouth Grindz', desc: 'Poke bowls', q: 'Braoke+Da+Mouth+Grindz+Kona+Hawaii' },
+      ],
+      maybes: [
+        { name: 'Green Sand Beach (Mahana)', desc: 'Long hike required, unique green sand', q: 'Green+Sand+Beach+Mahana+Hawaii' },
+        { name: 'South Point Cliff Dive', desc: 'Southernmost point of the US, nice views on the way', q: 'South+Point+Cliff+Jump+Hawaii' },
+        { name: 'Paleaku Gardens', desc: 'Gardens & views in South Kona', q: 'Paleaku+Gardens+Peace+Sanctuary+Hawaii' },
+      ]
+    },
+    // ─── DAY 5: TUE MAR 3 ───
+    {
+      id: 'day5',
+      tabLabel: 'Tue',
+      tabSub: '3/3',
+      date: 'Tuesday, March 3',
+      title: 'Kona: Ocean + Mountains',
+      emoji: '🌌',
+      subtitle: 'Sleep in · Mauna Kea sunset · Manta ray night snorkel',
+      lodging: { name: 'Airbnb – Captain Cook', addr: '82-5680 Kahau Pl, Captain Cook, HI 96704' },
+      mapWaypoints: ['Kealakekua+Bay+Hawaii', 'Mauna+Kea+Visitor+Center+Hawaii', 'Manta+Ray+Snorkeling+Kona+Hawaii'],
+      items: [
+        { time: 'Morning', title: 'Sleep in & Relax', subtitle: 'Coffee & beach walk near Kealakekua Bay', type: 'default', tags: ['relax'] },
+        { time: 'Afternoon', title: 'Mauna Kea Visitor Center', subtitle: '1.5 hr drive from Kona · Cloud sea + sunset views · No summit (snorkeling tonight)', type: 'default', tags: ['must-do', '~3 hrs total', '4WD needed'], gmaps: 'Mauna+Kea+Visitor+Information+Station+Hawaii', hours: 'Visitor Center open daily 11 AM–7 PM' },
+        { time: 'Evening / Night', title: 'Manta Ray Night Snorkel 🤿', subtitle: 'Hawaii Island & Ocean Tours · $75/person · ~2 hr tour', type: 'ocean', tags: ['must-do', 'booked', '$75/pp'], gmaps: 'Manta+Ray+Snorkeling+Kona+Hawaii' },
+      ],
+      food: [
+        { name: 'Island Vintage Cafe', desc: 'Açaí bowls', q: 'Island+Vintage+Cafe+Kona+Hawaii' },
+        { name: 'Randy\'s Hui Chicken and Ribs', desc: 'BBQ chicken & ribs', q: 'Randys+Hui+Chicken+Ribs+Kona' },
+        { name: 'TK Noodle & Hot Pot', desc: 'Open late', q: 'TK+Noodle+Hot+Pot+Kona+Hawaii' },
+        { name: 'Brown\'s Beach House', desc: 'Upscale beachfront dining', q: 'Browns+Beach+House+Kona+Hawaii' },
+        { name: 'Lava Lava Beach Club', desc: 'Beach club vibes', q: 'Lava+Lava+Beach+Club+Kona+Hawaii' },
+      ],
+      notes: '⚠️ Mauna Kea: No gas stations within 30 min drive – fill up before you go! Visitor center only (no summit) since snorkeling at night avoids altitude conflict.'
+    },
+    // ─── DAY 6: WED MAR 4 ───
+    {
+      id: 'day6',
+      tabLabel: 'Wed',
+      tabSub: '3/4',
+      date: 'Wednesday, March 4',
+      title: 'Big Island → Oʻahu',
+      emoji: '✈️',
+      subtitle: 'Departure day – Fly to Honolulu',
+      lodging: { name: 'Ritz-Carlton Turtle Bay', addr: '57-091 Kamehameha Hwy, Kahuku, HI 96731', checkin: '3:00 PM' },
+      mapWaypoints: ['Kona+International+Airport', 'Daniel+K+Inouye+International+Airport+Honolulu', 'Dole+Plantation+Wahiawa', 'Ritz+Carlton+Turtle+Bay+Oahu'],
+      items: [
+        { time: 'Morning', title: 'Pack & Breakfast', subtitle: 'Last morning at the Airbnb', type: 'default', tags: [] },
+        { time: '11:00 AM', title: 'Check out Airbnb', subtitle: 'Leave for Kona airport', type: 'travel', tags: [] },
+        { time: '~11:30 AM', title: 'Drop off Jeep Gladiator', subtitle: 'Turo drop-off at Kona airport', type: 'travel', tags: [] },
+        { time: '12:30 PM', title: 'Fly KOA → HNL', subtitle: 'Hawaiian Air HA 1067 · Conf: ANUNOD · Arrive 1:20 PM', type: 'travel', tags: ['flight'], isFlight: true, flightFrom: 'KOA', flightTo: 'HNL', flightArrive: '1:20 PM' },
+        { time: '1:30 PM', title: 'Pick up Turo – Ford Mustang', subtitle: 'Daniel K. Inouye International Airport', type: 'travel', tags: [] },
+        { time: '3:15–3:45 PM', title: 'Dole Plantation (Quick Stop)', subtitle: 'Dole Whip, restrooms, gift shop', type: 'default', tags: ['30 min'], gmaps: 'Dole+Plantation+Wahiawa+Hawaii' },
+        { time: '~4:00 PM', title: 'Happy Haleiwa + Patagonia', subtitle: 'Quick browse in Haleʻiwa town', type: 'default', tags: ['maybe', 'shopping'], gmaps: 'Haleiwa+Town+North+Shore+Oahu' },
+        { time: '5:00–5:30 PM', title: 'Check in Ritz-Carlton Turtle Bay', subtitle: '57-091 Kamehameha Hwy, Kahuku · Walk property & beach', type: 'lodging', tags: [], gmaps: 'Ritz+Carlton+Turtle+Bay+Oahu+Hawaii' },
+        { time: '🌅 Sunset', title: 'Sunset at Turtle Bay', subtitle: 'Coastal walk from hotel or drive to Sunset Beach (10 min)', type: 'default', tags: ['sunset spot'], gmaps: 'Sunset+Beach+North+Shore+Oahu' },
+        { time: 'Dinner', title: 'Beach House by Roy Yamaguchi', subtitle: 'Nice sit-down dinner at the resort', type: 'food', tags: ['food'], gmaps: 'Beach+House+Roy+Yamaguchi+Turtle+Bay' },
+      ],
+      food: [
+        { name: "Jenny's Shrimp Truck", desc: 'North Shore shrimp', q: 'Jennys+Shrimp+Truck+North+Shore+Oahu' },
+        { name: 'Da Bald Guy', desc: 'North Shore eats', q: 'Da+Bald+Guy+North+Shore+Oahu' },
+        { name: "Giovanni's Shrimp Truck", desc: 'Classic North Shore', q: 'Giovannis+Shrimp+Truck+North+Shore' },
+        { name: 'Haleʻiwa Beach House', desc: 'Oceanfront dining', q: 'Haleiwa+Beach+House+Restaurant+Oahu' },
+      ]
+    },
+    // ─── DAY 7: THU MAR 5 ───
+    {
+      id: 'day7',
+      tabLabel: 'Thu',
+      tabSub: '3/5',
+      date: 'Thursday, March 5',
+      title: 'Turtle Bay Resort Day',
+      emoji: '🏖️',
+      subtitle: 'Slow luxury day – No driving 🚫🚗',
+      lodging: { name: 'Ritz-Carlton Turtle Bay', addr: '57-091 Kamehameha Hwy, Kahuku, HI 96731' },
+      mapWaypoints: ['Ritz+Carlton+Turtle+Bay+Oahu+Hawaii'],
+      items: [
+        { time: 'Morning', title: 'Breakfast at Resort', subtitle: 'Beach time · Pool lounging', type: 'default', tags: ['relax'] },
+        { time: 'Midday', title: 'Water Activities', subtitle: 'Kayak, paddleboard, snorkeling, or bike the coastal trail', type: 'ocean', tags: ['pick & choose'] },
+        { time: 'Afternoon', title: 'Pool & Relaxation', subtitle: 'Nap, cocktails, spa, scenic coastal walk', type: 'default', tags: ['relax'] },
+        { time: '🌅 Sunset', title: 'Sunset from Cliffs', subtitle: 'Turtle Bay coastal cliffs · Minimal light pollution for stargazing later', type: 'default', tags: ['sunset spot'] },
+        { time: 'Dinner', title: 'Oceanfront Dinner at Resort', subtitle: 'Nice evening at the hotel restaurants', type: 'food', tags: ['food'] },
+      ],
+      notes: '🧘 This is your rest & recovery day. No car, no agenda. Just enjoy the resort, beach, and each other\'s company.'
+    },
+    // ─── DAY 8: FRI MAR 6 ───
+    {
+      id: 'day8',
+      tabLabel: 'Fri',
+      tabSub: '3/6',
+      date: 'Friday, March 6',
+      title: 'Windward Coast → Waikīkī',
+      emoji: '🌊',
+      subtitle: 'Lanikai · Hoʻomaluhia · Waikīkī sunset',
+      lodging: { name: 'Waikiki Malia', addr: '2211 Kuhio Ave, Waikiki, Honolulu, HI 96815', checkin: '3:00 PM' },
+      mapWaypoints: ['Sunset+Beach+North+Shore+Oahu', 'Lanikai+Beach+Kailua+Oahu', 'Hoomaluhia+Botanical+Garden+Oahu', 'Waikiki+Malia+Hotel+Honolulu'],
+      items: [
+        { time: '8:30–9:00 AM', title: 'Breakfast & Checkout Turtle Bay', subtitle: 'Optional: Stop at Sunset Beach (10 min from hotel)', type: 'travel', tags: [] },
+        { time: '~10:15 AM', title: 'Lanikai Beach', subtitle: 'Walk shoreline · Mokulua Islands views · Light swim', type: 'beach', tags: ['must-do', '45–60 min'], gmaps: 'Lanikai+Beach+Kailua+Oahu', hours: '⚠️ Limited parking – backup: Kailua Beach' },
+        { time: '~11:30 AM', title: 'Hoʻomaluhia Botanical Garden', subtitle: 'Scenic drive through · Short lake walk · Mountain photos', type: 'default', tags: ['must-do', '45–60 min', 'free'], gmaps: 'Hoomaluhia+Botanical+Garden+Kaneohe+Oahu', hours: 'Open daily 9 AM–4 PM' },
+        { time: '~1:00 PM', title: 'Lunch on the way', subtitle: 'Eat in Kailua or Kaneohe area', type: 'food', tags: ['food'] },
+        { time: '2:30–3:00 PM', title: 'Drive to Waikīkī', subtitle: 'Leave by 2:30 — traffic gets heavier after 4 PM', type: 'travel', tags: ['~40 min'], gmaps: 'Waikiki+Malia+Hotel+Honolulu' },
+        { time: '~3:30 PM', title: 'Return Rental Car + Check in', subtitle: 'Waikiki Malia · 2211 Kuhio Ave', type: 'lodging', tags: [], gmaps: 'Waikiki+Malia+2211+Kuhio+Avenue+Honolulu' },
+        { time: '4:30 PM', title: 'Line up at Duke\'s Waikiki', subtitle: 'Arrive early for ocean-view sunset table', type: 'food', tags: ['must-do'], gmaps: 'Dukes+Waikiki+Honolulu' },
+        { time: '4:45–5:45 PM', title: 'Stroll Kalākaua Avenue', subtitle: 'ABC Store · Patagonia Waikīkī · Happy Haleiwa', type: 'default', tags: ['shopping'], gmaps: 'Kalakaua+Avenue+Waikiki+Honolulu' },
+        { time: '6:15–7:30 PM', title: 'Sunset Dinner at Duke\'s 🌅', subtitle: 'Sunset ~6:30–6:45 PM · Ocean view, cocktails, dinner', type: 'food', tags: ['must-do', 'sunset'], gmaps: 'Dukes+Waikiki+Honolulu' },
+        { time: '7:30–8:00 PM', title: 'Fireworks at Hilton Hawaiian Village 🎆', subtitle: 'Walk along Waikīkī Beach toward Hilton · Show ~7:45 PM', type: 'default', tags: ['must-do'], gmaps: 'Hilton+Hawaiian+Village+Waikiki+Beach+Resort' },
+        { time: '8:00+ PM', title: 'Evening Stroll Back', subtitle: 'Walk back to Waikiki Malia · Optional: dessert on Kalākaua Ave', type: 'default', tags: [] },
+      ],
+      food: [
+        { name: "Duke's Waikiki", desc: 'Ocean-view sunset dinner', q: 'Dukes+Waikiki+Honolulu+Hawaii' },
+        { name: 'EbiNomi', desc: 'Famous garlic butter shrimp rice', q: 'EbiNomi+Waikiki+Honolulu' },
+        { name: 'Fresh Catch', desc: 'Big fresh fish portions', q: 'Fresh+Catch+Waikiki+Honolulu' },
+      ],
+      notes: '⚠️ Lanikai parking is very limited – arrive before 10:30 AM or switch to Kailua Beach. Leave Windward side by 2:30 PM to beat traffic.'
+    },
+    // ─── DAY 9: SAT MAR 7 ───
+    {
+      id: 'day9',
+      tabLabel: 'Sat',
+      tabSub: '3/7',
+      date: 'Saturday, March 7',
+      title: 'Waikīkī & Departure',
+      emoji: '🌴',
+      subtitle: 'Last morning in Hawaiʻi → Fly home',
+      lodging: null,
+      mapWaypoints: ['Waikiki+Beach+Honolulu', 'Daniel+K+Inouye+International+Airport+Honolulu'],
+      items: [
+        { time: 'Morning', title: 'Last Morning in Waikīkī', subtitle: 'Beach walk, breakfast, soak it in', type: 'default', tags: ['relax'] },
+        { time: '11:00 AM', title: 'Check out Waikiki Malia', subtitle: '2211 Kuhio Ave', type: 'travel', tags: [] },
+        { time: '~2:45 PM', title: 'Head to HNL Airport', subtitle: '~20–30 min drive · Drop off Ford Mustang at Turo', type: 'travel', tags: [], gmaps: 'Daniel+K+Inouye+International+Airport+Honolulu' },
+        { time: '4:49 PM', title: 'Fly HNL → SFO', subtitle: 'United UA 1947 · Conf: LLNP3P · Arrive 11:59 PM PST', type: 'travel', tags: ['flight'], isFlight: true, flightFrom: 'HNL', flightTo: 'SFO', flightArrive: '11:59 PM PST' },
+      ],
+      food: [
+        { name: 'EbiNomi', desc: 'Garlic butter shrimp rice', q: 'EbiNomi+Waikiki+Honolulu' },
+        { name: 'Fresh Catch', desc: 'Big fresh fish', q: 'Fresh+Catch+Waikiki+Honolulu' },
+      ]
+    },
+  ]
+};
+
+// ═══════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════
+
+function gmapsUrl(q) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q.replace(/\+/g, ' '))}`;
+}
+
+function gmapsDirectionsUrl(waypoints) {
+  if (!waypoints || waypoints.length < 2) return '#';
+  const origin = waypoints[0].replace(/\+/g, ' ');
+  const dest = waypoints[waypoints.length - 1].replace(/\+/g, ' ');
+  const wps = waypoints.slice(1, -1).map(w => w.replace(/\+/g, ' ')).join('|');
+  let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&travelmode=driving`;
+  if (wps) url += `&waypoints=${encodeURIComponent(wps)}`;
+  return url;
+}
+
+function embedMapUrl(waypoints) {
+  if (!waypoints || waypoints.length === 0) return '';
+  if (waypoints.length === 1) {
+    return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${waypoints[0]}&zoom=12`;
+  }
+  const origin = waypoints[0];
+  const dest = waypoints[waypoints.length - 1];
+  const wps = waypoints.slice(1, -1).join('|');
+  let url = `https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${origin}&destination=${dest}&mode=driving`;
+  if (wps) url += `&waypoints=${wps}`;
+  return url;
+}
+
+function renderTag(text) {
+  let cls = 'tag-time';
+  const lower = text.toLowerCase();
+  if (lower === 'must-do') cls = 'tag-must';
+  else if (lower === 'maybe') cls = 'tag-maybe';
+  else if (lower === 'food') cls = 'tag-food';
+  else if (lower === 'free') cls = 'tag-free';
+  else if (lower.includes('$') || lower === 'paid') cls = 'tag-paid';
+  else if (lower.includes('hike') || lower === '🥾' || lower === 'main hike') cls = 'tag-hike';
+  else if (lower === 'flight' || lower === 'booked') cls = 'tag-must';
+  return `<span class="tag ${cls}">${text}</span>`;
+}
+
+function renderFlightCard(item) {
+  return `
+    <div class="flight-card">
+      <div class="flight-route">
+        <div class="flight-airport">
+          <div class="flight-code">${item.flightFrom}</div>
+          <div class="flight-city">${item.time}</div>
+        </div>
+        <div class="flight-line"><div class="flight-line-inner"></div></div>
+        <div class="flight-airport">
+          <div class="flight-code">${item.flightTo}</div>
+          <div class="flight-city">${item.flightArrive}</div>
+        </div>
+      </div>
+      <div class="flight-meta">
+        <span>${item.subtitle}</span>
+      </div>
+    </div>`;
+}
+
+function renderTimelineItem(item) {
+  if (item.isFlight) return `<div style="padding: 0 0 10px">${renderFlightCard(item)}</div>`;
+
+  const dotClass = item.type === 'food' ? 'food' : item.type === 'travel' ? 'travel' : item.type === 'lodging' ? 'lodging' : item.type === 'beach' ? 'beach' : item.type === 'lava' ? 'lava' : '';
+  const timeClass = item.type === 'food' ? 'food-time' : item.type === 'travel' ? 'travel-time' : '';
+
+  let actions = '';
+  if (item.gmaps) {
+    actions += `<a href="${gmapsUrl(item.gmaps)}" target="_blank" rel="noopener" class="action-btn navigate">📍 Navigate</a>`;
+  }
+  if (item.hours) {
+    actions += `<span class="action-btn info">🕐 ${item.hours}</span>`;
+  }
+
+  return `
+    <div class="timeline-item">
+      <div class="timeline-line">
+        <div class="timeline-dot ${dotClass}"></div>
+        <div class="timeline-stem"></div>
+      </div>
+      <div class="timeline-card">
+        <div class="timeline-time ${timeClass}">${item.time}</div>
+        <div class="timeline-title">${item.title}</div>
+        ${item.subtitle ? `<div class="timeline-subtitle">${item.subtitle}</div>` : ''}
+        ${item.tags && item.tags.length ? `<div class="timeline-tags">${item.tags.map(renderTag).join('')}</div>` : ''}
+        ${actions ? `<div class="timeline-actions">${actions}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function renderFoodSection(foods, title = '🍽 Food Options Nearby') {
+  if (!foods || !foods.length) return '';
+  return `
+    <div class="food-section">
+      <h3>${title}</h3>
+      ${foods.map(f => `
+        <div class="food-item">
+          <div>
+            <div class="food-item-name">${f.name}</div>
+            <div class="food-item-desc">${f.desc || ''}</div>
+          </div>
+          <a href="${gmapsUrl(f.q)}" target="_blank" rel="noopener" class="food-item-link">📍 Map</a>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function renderMaybes(maybes) {
+  if (!maybes || !maybes.length) return '';
+  return `
+    <div class="info-card">
+      <button class="collapsible-trigger" onclick="toggleCollapsible(this)">
+        <span>🤔 Maybe / If Time Allows</span>
+        <span class="chevron">▼</span>
+      </button>
+      <div class="collapsible-content">
+        <div style="padding-top:10px">
+        ${maybes.map(m => `
+          <div class="food-item">
+            <div>
+              <div class="food-item-name">${m.name}</div>
+              <div class="food-item-desc">${m.desc || ''}</div>
+            </div>
+            <a href="${gmapsUrl(m.q)}" target="_blank" rel="noopener" class="food-item-link">📍 Map</a>
+          </div>
+        `).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderOverview() {
+  return `
+    <div class="day-header">
+      <div class="day-emoji">🌺</div>
+      <h2>Hawaiʻi 2026</h2>
+      <div class="day-subtitle">Feb 27 – Mar 7 · 9 Days · 2 Islands</div>
+    </div>
+
+    <div class="overview-stats">
+      <div class="stat-card"><div class="stat-value">9</div><div class="stat-label">Days</div></div>
+      <div class="stat-card"><div class="stat-value">2</div><div class="stat-label">Islands</div></div>
+      <div class="stat-card"><div class="stat-value">4</div><div class="stat-label">Hotels</div></div>
+      <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Flights</div></div>
+    </div>
+
+    <div class="island-card bigisland">
+      <h3>🌋 Big Island (Hawaiʻi)</h3>
+      <p>Feb 27 – Mar 4 · 5 nights<br>
+      Volcano → Hilo → Kona<br>
+      <strong>Volcano Inn</strong> (2 nights) → <strong>Volcano Village Lodge</strong> (1 night) → <strong>Airbnb Captain Cook</strong> (2 nights)</p>
+    </div>
+
+    <div class="island-card oahu">
+      <h3>🏖️ Oʻahu</h3>
+      <p>Mar 4 – Mar 7 · 3 nights<br>
+      North Shore → Waikīkī<br>
+      <strong>Ritz-Carlton Turtle Bay</strong> (2 nights) → <strong>Waikiki Malia</strong> (1 night)</p>
+    </div>
+
+    <div class="section-divider"><span>Flights</span></div>
+    ${renderFlightCard({ time: '9:05 AM PST', title: '', subtitle: 'UA 1721 · Feb 27 · Conf: LLNP3P', flightFrom: 'SFO', flightTo: 'KOA', flightArrive: '12:59 PM HST' })}
+    ${renderFlightCard({ time: '12:30 PM HST', title: '', subtitle: 'HA 1067 · Mar 4 · Conf: ANUNOD', flightFrom: 'KOA', flightTo: 'HNL', flightArrive: '1:20 PM HST' })}
+    ${renderFlightCard({ time: '4:49 PM HST', title: '', subtitle: 'UA 1947 · Mar 7 · Conf: LLNP3P', flightFrom: 'HNL', flightTo: 'SFO', flightArrive: '11:59 PM PST' })}
+
+    <div class="section-divider"><span>Cars</span></div>
+    <div class="info-card">
+      <div class="food-item"><div><div class="food-item-name">🚙 Jeep Gladiator (Turo)</div><div class="food-item-desc">Feb 27, 1 PM – Mar 4, 1 PM · Big Island</div></div></div>
+      <div class="food-item" style="border:none"><div><div class="food-item-name">🚗 Ford Mustang (Turo)</div><div class="food-item-desc">Mar 4, 1:30 PM – Mar 7, 4:30 PM · Oʻahu</div></div></div>
+    </div>
+
+    <div class="section-divider"><span>What to Pack</span></div>
+    <div class="info-card">
+      <div class="info-grid">
+        <div class="info-chip">🥾 Hiking shoes</div>
+        <div class="info-chip">🧥 Rain jacket</div>
+        <div class="info-chip">👕 Layers</div>
+        <div class="info-chip">💧 Water bottles</div>
+        <div class="info-chip">🩱 Swimsuits</div>
+        <div class="info-chip">🩴 Water shoes</div>
+        <div class="info-chip">🧴 Reef-safe sunscreen</div>
+        <div class="info-chip">🔦 Flashlight</div>
+        <div class="info-chip">🍌 Snacks</div>
+        <div class="info-chip">🧳 Day pack</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDayPage(day) {
+  if (day.type === 'overview') return renderOverview();
+
+  let html = '';
+
+  // Day header
+  html += `
+    <div class="day-header">
+      <div class="day-emoji">${day.emoji}</div>
+      <h2>${day.title}</h2>
+      <div class="day-subtitle">${day.date} · ${day.subtitle}</div>
+      ${day.lodging ? `<div class="day-lodging">🏨 ${day.lodging.name}${day.lodging.checkin ? ` · Check-in ${day.lodging.checkin}` : ''}</div>` : ''}
+    </div>`;
+
+  // Hotel card with navigation
+  if (day.lodging) {
+    html += `
+      <div class="hotel-card">
+        <div class="hotel-icon">🏨</div>
+        <div class="hotel-info">
+          <div class="hotel-name">${day.lodging.name}</div>
+          <div class="hotel-detail">${day.lodging.addr}</div>
+        </div>
+        <a href="${gmapsUrl(day.lodging.addr)}" target="_blank" rel="noopener" class="hotel-nav">📍 Map</a>
+      </div>`;
+  }
+
+  // Map
+  if (day.mapWaypoints && day.mapWaypoints.length) {
+    const mapSrc = embedMapUrl(day.mapWaypoints);
+    const directionsUrl = gmapsDirectionsUrl(day.mapWaypoints);
+    html += `
+      <div class="map-container">
+        <iframe src="${mapSrc}" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="map-overlay">
+          <a href="${directionsUrl}" target="_blank" rel="noopener">🗺️ Open Full Route</a>
+        </div>
+      </div>`;
+  }
+
+  // Notes
+  if (day.notes) {
+    html += `<div class="notes-bar">${day.notes}</div>`;
+  }
+
+  // Timeline
+  html += '<div class="section-divider"><span>Schedule</span></div>';
+  html += '<div class="timeline">';
+  (day.items || []).forEach(item => {
+    html += renderTimelineItem(item);
+  });
+  html += '</div>';
+
+  // Maybes
+  html += renderMaybes(day.maybes);
+
+  // Food
+  html += renderFoodSection(day.food);
+
+  return html;
+}
+
+// ═══════════════════════════════════════════
+// APP STATE
+// ═══════════════════════════════════════════
+
+let currentDay = 0;
+
+function switchDay(idx) {
+  currentDay = idx;
+  // Update tabs
+  document.querySelectorAll('.day-tab').forEach((tab, i) => {
+    tab.classList.toggle('active', i === idx);
+  });
+  // Scroll tab into view
+  const activeTab = document.querySelectorAll('.day-tab')[idx];
+  if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  // Render page
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `<div class="day-page active">${renderDayPage(TRIP.days[idx])}</div>`;
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleCollapsible(btn) {
+  btn.classList.toggle('open');
+  const content = btn.nextElementSibling;
+  content.classList.toggle('open');
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isLight = html.getAttribute('data-theme') === 'light';
+  const next = isLight ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.querySelector('.theme-toggle').textContent = next === 'light' ? '🌙' : '☀️';
+  const meta = document.getElementById('themeColor');
+  if (meta) meta.content = next === 'light' ? '#faf8f5' : '#0a0f0d';
+}
+
+function init() {
+  // Set theme toggle icon
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const toggle = document.querySelector('.theme-toggle');
+  if (toggle) toggle.textContent = isLight ? '🌙' : '☀️';
+
+  const tabsEl = document.getElementById('dayTabs');
+  TRIP.days.forEach((day, i) => {
+    const tab = document.createElement('button');
+    tab.className = 'day-tab' + (i === 0 ? ' active' : '');
+    tab.innerHTML = `<span>${day.tabLabel}</span><span class="tab-label">${day.tabSub}</span>`;
+    tab.addEventListener('click', () => switchDay(i));
+    tabsEl.appendChild(tab);
+  });
+  switchDay(0);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

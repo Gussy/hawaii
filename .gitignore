@@ -1,0 +1,6 @@
+# Hermit downloaded packages
+/bin/.*.pkg
+
+# OS files
+.DS_Store
+Thumbs.db
