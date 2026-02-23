@@ -33,7 +33,7 @@ git push -u origin main
    - **Production branch**: `main`
    - **Framework preset**: None
    - **Build command**: *(leave empty)*
-   - **Build output directory**: `/`
+   - **Build output directory**: `public`
 6. Click **Save and Deploy**
 
 Your site will deploy to `https://hawaii.pages.dev` (or whatever project name you chose).
