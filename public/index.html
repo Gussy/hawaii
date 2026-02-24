@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Hawaiʻi 2026 🌺</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -32,7 +34,7 @@
   --border-subtle: rgba(255,255,255,0.04);
   --header-bg: rgba(10,15,13,0.88);
   --tabs-bg: rgba(10,15,13,0.92);
-  --map-filter: invert(90%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+  --tile-sat: 0.3;
 }
 
 [data-theme="light"] {
@@ -54,7 +56,7 @@
   --border-subtle: rgba(0,0,0,0.05);
   --header-bg: rgba(250,248,245,0.92);
   --tabs-bg: rgba(250,248,245,0.95);
-  --map-filter: none;
+  --tile-sat: 0.6;
 }
 
 /* ═══ THEME TOGGLE ═══ */
@@ -224,16 +226,74 @@ body {
   border: 1px solid var(--border);
 }
 
-.map-container iframe {
+.map-container .leaflet-container {
   width: 100%; height: 100%;
-  border: 0;
-  filter: var(--map-filter);
+  background: var(--surface);
+  font-family: var(--font-body);
 }
+
+.map-container .leaflet-tile-pane { filter: saturate(var(--tile-sat)); }
+
+.waypoint-marker, .food-pin { background: none !important; border: none !important; }
+
+.marker-dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  border: 2px solid rgba(255,255,255,0.9);
+}
+
+.waypoint-marker .marker-dot {
+  background: var(--accent);
+  font-size: 0.68rem;
+}
+
+.food-pin .marker-dot {
+  background: var(--accent2);
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+
+.leaflet-popup-tip { background: var(--card); }
+
+.leaflet-popup-content { font-size: 0.78rem; line-height: 1.5; }
+.leaflet-popup-content a { color: var(--accent); }
+.leaflet-popup-content strong { display: block; margin-bottom: 2px; }
+
+.map-legend {
+  background: var(--card);
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.68rem;
+  display: flex; gap: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  color: var(--text-muted);
+}
+
+.legend-item { display: flex; align-items: center; gap: 4px; }
+
+.legend-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.8);
+}
+
+.legend-dot.route { background: var(--accent); }
+.legend-dot.food { background: var(--accent2); }
 
 .map-overlay {
   position: absolute;
   bottom: 10px; right: 10px;
-  z-index: 5;
+  z-index: 1001;
 }
 
 .map-overlay a {
@@ -832,11 +892,10 @@ const TRIP = {
       emoji: '🖤',
       subtitle: 'Beach day + drive to Kona side',
       lodging: { name: 'Airbnb – Captain Cook', addr: '82-5680 Kahau Pl, Captain Cook, HI 96704', checkin: '3:00 PM' },
-      mapWaypoints: ['Kehena+Black+Sand+Beach+Hawaii', 'Punaluu+Black+Sand+Beach+Hawaii', 'South+Kona+Fruit+Stand', '82-5680+Kahau+Place+Captain+Cook+HI', 'Kua+Bay+Maniniowali+Beach+Hawaii'],
+      mapWaypoints: ['Punaluu+Black+Sand+Beach+Hawaii', 'South+Kona+Fruit+Stand', '82-5680+Kahau+Place+Captain+Cook+HI', 'Kua+Bay+Maniniowali+Beach+Hawaii'],
       items: [
         { time: '11:00 AM', title: 'Check out Volcano Village Lodge', subtitle: 'Head south toward beaches', type: 'travel', tags: [] },
-        { time: '~12:00 PM', title: 'Kehena Black Sand Beach', subtitle: 'Short visit · Secluded beach near Pāhoa', type: 'beach', tags: ['maybe', '30–45 min'], gmaps: 'Kehena+Black+Sand+Beach+Hawaii' },
-        { time: '~1:00 PM', title: 'Punaluʻu Black Sand Beach', subtitle: 'Famous black sand beach · Sea turtles! 🐢', type: 'beach', tags: ['must-do', '~1 hr'], gmaps: 'Punaluu+Black+Sand+Beach+Hawaii' },
+        { time: '~12:30 PM', title: 'Punaluʻu Black Sand Beach', subtitle: 'Famous black sand beach · Sea turtles! 🐢', type: 'beach', tags: ['must-do', '~1 hr'], gmaps: 'Punaluu+Black+Sand+Beach+Hawaii' },
         { time: '~2:30 PM', title: 'South Kona Fruit Stand', subtitle: 'Quick stop for fresh fruit on the drive', type: 'food', tags: ['food', 'quick stop'], gmaps: 'South+Kona+Fruit+Stand+Hawaii' },
         { time: '~3:00 PM', title: 'Check in Airbnb', subtitle: '82-5680 Kahau Pl, Captain Cook, HI 96704 · Kealakekua Bay area', type: 'lodging', tags: [], gmaps: '82-5680+Kahau+Place+Captain+Cook+HI+96704' },
         { time: 'Late Afternoon', title: 'Kua Bay (Maniniʻōwali Beach) 🌅', subtitle: 'Beautiful sunset beach spot', type: 'beach', tags: ['must-do', 'sunset spot'], gmaps: 'Kua+Bay+Maniniowali+Beach+Hawaii' },
@@ -847,6 +906,7 @@ const TRIP = {
         { name: 'Braoke Da Mouth Grindz', desc: 'Poke bowls', q: 'Braoke+Da+Mouth+Grindz+Kona+Hawaii' },
       ],
       maybes: [
+        { name: 'Kehena Black Sand Beach', desc: 'Secluded beach near Pāhoa · 30–45 min', q: 'Kehena+Black+Sand+Beach+Hawaii' },
         { name: 'Green Sand Beach (Mahana)', desc: 'Long hike required, unique green sand', q: 'Green+Sand+Beach+Mahana+Hawaii' },
         { name: 'South Point Cliff Dive', desc: 'Southernmost point of the US, nice views on the way', q: 'South+Point+Cliff+Jump+Hawaii' },
         { name: 'Paleaku Gardens', desc: 'Gardens & views in South Kona', q: 'Paleaku+Gardens+Peace+Sanctuary+Hawaii' },
@@ -984,6 +1044,163 @@ const TRIP = {
 };
 
 // ═══════════════════════════════════════════
+// LOCATION COORDINATES [lat, lng]
+// ═══════════════════════════════════════════
+const COORDS = {
+  // ── Big Island: Kona Area ──
+  'Kona+International+Airport+HI':          [19.739, -156.046],
+  'Kona+International+Airport':             [19.739, -156.046],
+  'Pine+Tree+Cafe+Kailua+Kona+Hawaii':      [19.645, -155.987],
+  'Umekes+Fish+Market+Bar+Grill+Kailua+Kona': [19.640, -155.993],
+  'Island+Lava+Java+Kailua+Kona+Hawaii':    [19.639, -155.997],
+  'Island+Naturals+Kailua+Kona':            [19.642, -155.989],
+  'Paakai+Poke+Deli+Kona+Hawaii':           [19.641, -155.995],
+  'Braoke+Da+Mouth+Grindz+Kona+Hawaii':     [19.642, -155.994],
+  'Island+Vintage+Cafe+Kona+Hawaii':         [19.640, -155.996],
+  'Randys+Hui+Chicken+Ribs+Kona':           [19.639, -155.998],
+  'TK+Noodle+Hot+Pot+Kona+Hawaii':          [19.635, -155.994],
+  'Manta+Ray+Snorkeling+Kona+Hawaii':       [19.640, -155.997],
+  'Kealakekua+HI':                          [19.520, -155.930],
+  'Kealakekua+Bay+Hawaii':                  [19.478, -155.929],
+  '82-5680+Kahau+Place+Captain+Cook+HI':    [19.496, -155.898],
+  'South+Kona+Fruit+Stand':                 [19.440, -155.880],
+  'South+Kona+Fruit+Stand+Hawaii':          [19.440, -155.880],
+  'Kua+Bay+Maniniowali+Beach+Hawaii':       [19.829, -155.888],
+  'Browns+Beach+House+Kona+Hawaii':          [19.920, -155.861],
+  'Lava+Lava+Beach+Club+Kona+Hawaii':       [19.920, -155.860],
+  'Mauna+Kea+Visitor+Center+Hawaii':        [19.759, -155.456],
+  'Ocean+View+HI':                          [19.066, -155.765],
+  // ── Big Island: Volcano Area ──
+  'Volcano+Inn+19-3820+Old+Volcano+Rd+Volcano+HI': [19.443, -155.234],
+  '19-4183+Kawailehua+Road+Volcano+HI':     [19.453, -155.238],
+  'Tuk+Tuk+Thai+Volcano+Hawaii':            [19.448, -155.234],
+  'Aloha+Mix+Food+Truck+Hawaii':            [19.446, -155.233],
+  'Volcano+House+Restaurant+Hawaii':        [19.429, -155.258],
+  'Steam+Vents+Hawaii+Volcanoes+National+Park': [19.431, -155.257],
+  'Kilauea+Overlook+Hawaii':                [19.419, -155.256],
+  'Uekahuna+viewpoint+Hawaii':              [19.430, -155.264],
+  'Nahuku+Thurston+Lava+Tube':              [19.414, -155.240],
+  'Kilauea+Iki+Trail+Hawaii':               [19.416, -155.243],
+  'Chain+of+Craters+Road+Hawaii':           [19.310, -155.100],
+  'Holei+Sea+Arch+Hawaii':                  [19.292, -155.097],
+  // ── Big Island: Hilo Area ──
+  'Onomea+Bay+Trail+Papaikou+HI':           [19.810, -155.094],
+  'Hawaii+Tropical+Botanical+Garden':       [19.832, -155.092],
+  'Akaka+Falls+State+Park':                 [19.854, -155.153],
+  'Hilo+Farmers+Market':                    [19.724, -155.085],
+  'Tenkatori+Hilo+Hawaii':                  [19.724, -155.091],
+  'Pineapples+Island+Fresh+Cuisine+Hilo':   [19.724, -155.085],
+  'Tetsumen+Hilo+Hawaii':                   [19.724, -155.087],
+  // ── Big Island: Beaches ──
+  'Kehena+Black+Sand+Beach+Hawaii':         [19.436, -154.961],
+  'Punaluu+Black+Sand+Beach+Hawaii':        [19.137, -155.505],
+  // ── Oʻahu: North Shore ──
+  'Dole+Plantation+Wahiawa':                [21.527, -158.038],
+  'Ritz+Carlton+Turtle+Bay+Oahu':           [21.707, -158.001],
+  'Ritz+Carlton+Turtle+Bay+Oahu+Hawaii':    [21.707, -158.001],
+  'Sunset+Beach+North+Shore+Oahu':          [21.675, -158.043],
+  'Jennys+Shrimp+Truck+North+Shore+Oahu':   [21.587, -158.100],
+  'Da+Bald+Guy+North+Shore+Oahu':           [21.583, -158.102],
+  'Giovannis+Shrimp+Truck+North+Shore':     [21.569, -158.091],
+  'Haleiwa+Beach+House+Restaurant+Oahu':    [21.576, -158.100],
+  // ── Oʻahu: Windward & Honolulu ──
+  'Daniel+K+Inouye+International+Airport+Honolulu': [21.319, -157.922],
+  'Lanikai+Beach+Kailua+Oahu':              [21.386, -157.714],
+  'Hoomaluhia+Botanical+Garden+Oahu':       [21.389, -157.801],
+  'Waikiki+Malia+Hotel+Honolulu':           [21.277, -157.823],
+  'Waikiki+Beach+Honolulu':                 [21.277, -157.827],
+  'Dukes+Waikiki+Honolulu+Hawaii':          [21.276, -157.828],
+  'EbiNomi+Waikiki+Honolulu':               [21.279, -157.826],
+  'Fresh+Catch+Waikiki+Honolulu':           [21.278, -157.824],
+};
+
+// ═══════════════════════════════════════════
+// LEAFLET MAP
+// ═══════════════════════════════════════════
+let currentMap = null;
+let currentTileLayer = null;
+
+function getTileUrl() {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  return isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+}
+
+function initDayMap(day) {
+  if (currentMap) { currentMap.remove(); currentMap = null; }
+  if (!day || day.type === 'overview') return;
+  const el = document.getElementById('leaflet-map-' + day.id);
+  if (!el) return;
+
+  const map = L.map(el, { scrollWheelZoom: false, attributionControl: false });
+  currentTileLayer = L.tileLayer(getTileUrl(), { maxZoom: 18 }).addTo(map);
+  L.control.attribution({ prefix: false, position: 'bottomleft' })
+    .addAttribution('© <a href="https://www.openstreetmap.org/copyright">OSM</a> · <a href="https://carto.com/">CARTO</a>')
+    .addTo(map);
+
+  const bounds = L.latLngBounds();
+  const wpCoords = [];
+
+  // Waypoint markers (numbered)
+  (day.mapWaypoints || []).forEach((wp, i) => {
+    const c = COORDS[wp];
+    if (!c) return;
+    const ll = L.latLng(c[0], c[1]);
+    wpCoords.push(ll);
+    bounds.extend(ll);
+    const name = wp.replace(/\+/g, ' ');
+    L.marker(ll, {
+      icon: L.divIcon({
+        className: 'waypoint-marker',
+        html: '<div class="marker-dot">' + (i + 1) + '</div>',
+        iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -13]
+      })
+    }).addTo(map).bindPopup('<strong>' + name + '</strong><br><a href="' + gmapsUrl(wp) + '" target="_blank">Open in Google Maps</a>');
+  });
+
+  // Route polyline
+  if (wpCoords.length >= 2) {
+    L.polyline(wpCoords, { color: '#4fd1a5', weight: 2.5, dashArray: '8, 8', opacity: 0.5 }).addTo(map);
+  }
+
+  // Food markers
+  let hasFoodPins = false;
+  (day.food || []).forEach(f => {
+    const c = COORDS[f.q];
+    if (!c) return;
+    hasFoodPins = true;
+    const ll = L.latLng(c[0], c[1]);
+    bounds.extend(ll);
+    L.marker(ll, {
+      icon: L.divIcon({
+        className: 'food-pin',
+        html: '<div class="marker-dot">🍽</div>',
+        iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -13]
+      })
+    }).addTo(map).bindPopup('<strong>' + f.name + '</strong>' + (f.desc ? '<br>' + f.desc : '') + '<br><a href="' + gmapsUrl(f.q) + '" target="_blank">Open in Google Maps</a>');
+  });
+
+  // Legend
+  if (hasFoodPins) {
+    const legend = L.control({ position: 'topright' });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'map-legend');
+      div.innerHTML = '<span class="legend-item"><span class="legend-dot route"></span> Stops</span><span class="legend-item"><span class="legend-dot food"></span> Food</span>';
+      return div;
+    };
+    legend.addTo(map);
+  }
+
+  // Fit bounds
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+  }
+
+  currentMap = map;
+}
+
+// ═══════════════════════════════════════════
 // RENDER ENGINE
 // ═══════════════════════════════════════════
 
@@ -1001,18 +1218,7 @@ function gmapsDirectionsUrl(waypoints) {
   return url;
 }
 
-function embedMapUrl(waypoints) {
-  if (!waypoints || waypoints.length === 0) return '';
-  if (waypoints.length === 1) {
-    return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${waypoints[0]}&zoom=12`;
-  }
-  const origin = waypoints[0];
-  const dest = waypoints[waypoints.length - 1];
-  const wps = waypoints.slice(1, -1).join('|');
-  let url = `https://www.google.com/maps/embed/v1/directions?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&origin=${origin}&destination=${dest}&mode=driving`;
-  if (wps) url += `&waypoints=${wps}`;
-  return url;
-}
+
 
 function renderTag(text) {
   let cls = 'tag-time';
@@ -1209,13 +1415,12 @@ function renderDayPage(day) {
 
   // Map
   if (day.mapWaypoints && day.mapWaypoints.length) {
-    const mapSrc = embedMapUrl(day.mapWaypoints);
     const directionsUrl = gmapsDirectionsUrl(day.mapWaypoints);
     html += `
       <div class="map-container">
-        <iframe src="${mapSrc}" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div id="leaflet-map-${day.id}" style="width:100%;height:100%"></div>
         <div class="map-overlay">
-          <a href="${directionsUrl}" target="_blank" rel="noopener">🗺️ Open Full Route</a>
+          <a href="${directionsUrl}" target="_blank" rel="noopener">🗺️ Open in Google Maps</a>
         </div>
       </div>`;
   }
@@ -1260,6 +1465,8 @@ function switchDay(idx) {
   // Render page
   const main = document.getElementById('mainContent');
   main.innerHTML = `<div class="day-page active">${renderDayPage(TRIP.days[idx])}</div>`;
+  // Initialize Leaflet map
+  initDayMap(TRIP.days[idx]);
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1283,6 +1490,11 @@ function toggleTheme() {
   document.querySelector('.theme-toggle').textContent = next === 'light' ? '🌙' : '☀️';
   const meta = document.getElementById('themeColor');
   if (meta) meta.content = next === 'light' ? '#faf8f5' : '#0a0f0d';
+  // Swap map tiles
+  if (currentMap && currentTileLayer) {
+    currentMap.removeLayer(currentTileLayer);
+    currentTileLayer = L.tileLayer(getTileUrl(), { maxZoom: 18 }).addTo(currentMap);
+  }
 }
 
 function init() {
