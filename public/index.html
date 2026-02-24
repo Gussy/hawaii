@@ -742,17 +742,20 @@ const TRIP = {
       emoji: '✈️',
       subtitle: 'SFO → Kona · Drive to Volcano',
       lodging: { name: 'Volcano Inn', addr: '19-3820 Old Volcano Rd, Volcano, HI 96785', checkin: '3:00 PM' },
-      mapWaypoints: ['Kona+International+Airport+HI', 'Volcano+Inn+19-3820+Old+Volcano+Rd+Volcano+HI'],
+      mapWaypoints: ['Kona+International+Airport+HI', 'Pine+Tree+Cafe+Kailua+Kona+Hawaii', 'Kealakekua+HI', 'Ocean+View+HI', 'Volcano+Inn+19-3820+Old+Volcano+Rd+Volcano+HI'],
       items: [
         { time: '9:05 AM PST', title: 'Depart SFO → Kona', subtitle: 'United UA 1721 · Conf: LLNP3P', type: 'travel', tags: ['flight'], isFlight: true, flightFrom: 'SFO', flightTo: 'KOA', flightArrive: '12:59 PM HST' },
         { time: '1:00 PM', title: 'Pick up Turo – Jeep Gladiator', subtitle: 'Kona International Airport', type: 'travel', tags: [], gmaps: 'Kona+International+Airport' },
-        { time: '1:30–2:15 PM', title: 'Quick Lunch near Airport', subtitle: 'Grab food before the drive', type: 'food', tags: ['food'] },
+        { time: '1:30–2:15 PM', title: 'Quick Lunch near Airport', subtitle: 'Grab food in Kailua-Kona before the drive', type: 'food', tags: ['food'], gmaps: 'Pine+Tree+Cafe+Kailua+Kona+Hawaii' },
         { time: '2:15–5:00 PM', title: 'Drive Kona → Volcano', subtitle: 'South route via Hwy 11 · ~2.5 hrs', type: 'travel', tags: ['~2.5 hr drive'], gmaps: 'Volcano+Inn+19-3820+Old+Volcano+Rd+Volcano+HI' },
         { time: '5:00 PM', title: 'Check in Volcano Inn', subtitle: '19-3820 Old Volcano Rd, Volcano, HI 96785', type: 'lodging', tags: [], gmaps: '19-3820+Old+Volcano+Rd+Volcano+HI+96785' },
         { time: 'Evening', title: 'Explore Volcano Village', subtitle: 'Light walk, early dinner, rest up for big day tomorrow', type: 'default', tags: ['take it easy'] },
       ],
       food: [
-        { name: 'Tuk Tuk Thai Food Truck', desc: 'Near Volcano Village', q: 'Tuk+Tuk+Thai+Volcano+Hawaii' },
+        { name: 'Pine Tree Cafe', desc: 'Great plate lunch near airport · Spicy Garlic Chicken', q: 'Pine+Tree+Cafe+Kailua+Kona+Hawaii' },
+        { name: 'Umeke\'s Fish Market Bar & Grill', desc: 'Local poke & seafood · Kailua-Kona', q: 'Umekes+Fish+Market+Bar+Grill+Kailua+Kona' },
+        { name: 'Island Lava Java', desc: 'Oceanfront café · burgers, fish tacos', q: 'Island+Lava+Java+Kailua+Kona+Hawaii' },
+        { name: 'Tuk Tuk Thai Food Truck', desc: 'Near Volcano Village (evening)', q: 'Tuk+Tuk+Thai+Volcano+Hawaii' },
         { name: 'Aloha Mix Food Truck', desc: 'Near black sand beach area', q: 'Aloha+Mix+Food+Truck+Hawaii' },
       ]
     },
@@ -1024,6 +1027,10 @@ function renderTag(text) {
 }
 
 function renderFlightCard(item) {
+  const flightMatch = item.subtitle.match(/([A-Z]{2})\s*(\d{1,5})/);
+  const meta = flightMatch
+    ? item.subtitle.replace(flightMatch[0], `<a href="https://www.google.com/search?q=${flightMatch[1]}+${flightMatch[2]}+flight+status" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: underline;">${flightMatch[0]}</a>`)
+    : item.subtitle;
   return `
     <div class="flight-card">
       <div class="flight-route">
@@ -1038,7 +1045,7 @@ function renderFlightCard(item) {
         </div>
       </div>
       <div class="flight-meta">
-        <span>${item.subtitle}</span>
+        <span>${meta}</span>
       </div>
     </div>`;
 }
