@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Hawaiʻi 2026 🌺</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.css" rel="stylesheet" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.12.0/mapbox-gl.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -226,13 +226,10 @@ body {
   border: 1px solid var(--border);
 }
 
-.map-container .leaflet-container {
+.map-container .mapboxgl-map {
   width: 100%; height: 100%;
-  background: var(--surface);
   font-family: var(--font-body);
 }
-
-.map-container .leaflet-tile-pane { filter: saturate(var(--tile-sat)); }
 
 .waypoint-marker, .food-pin { background: none !important; border: none !important; }
 
@@ -256,18 +253,20 @@ body {
   line-height: 1;
 }
 
-.leaflet-popup-content-wrapper {
+.mapboxgl-popup-content {
   background: var(--card);
   color: var(--text);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  padding: 10px 14px;
 }
 
-.leaflet-popup-tip { background: var(--card); }
-
-.leaflet-popup-content { font-size: 0.78rem; line-height: 1.5; }
-.leaflet-popup-content a { color: var(--accent); }
-.leaflet-popup-content strong { display: block; margin-bottom: 2px; }
+.mapboxgl-popup-content a { color: var(--accent); }
+.mapboxgl-popup-content strong { display: block; margin-bottom: 2px; }
+.mapboxgl-popup-tip { border-top-color: var(--card); }
+.mapboxgl-popup-close-button { color: var(--text-muted); font-size: 1.1rem; padding: 2px 6px; }
 
 .map-legend {
   background: var(--card);
@@ -1115,89 +1114,144 @@ const COORDS = {
 };
 
 // ═══════════════════════════════════════════
-// LEAFLET MAP
+// MAPBOX GL MAP
 // ═══════════════════════════════════════════
-let currentMap = null;
-let currentTileLayer = null;
+mapboxgl.accessToken = 'pk.eyJ1IjoiYW5ndXNwIiwiYSI6ImNtbTV5emFsZzBhd2Eyd291NjFxczk5bGIifQ.jLYFsTZC-idHV7Y0B7WhtQ';
 
-function getTileUrl() {
+let currentMap = null;
+const routeCache = {};
+
+function getMapStyle() {
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  return isDark
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  return isDark ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11';
 }
 
-function initDayMap(day) {
+function addRouteLayersToMap(map, dayId, geometry) {
+  const srcId = 'route-' + dayId;
+  if (map.getSource(srcId)) return;
+  map.addSource(srcId, { type: 'geojson', data: { type: 'Feature', geometry } });
+  map.addLayer({ id: srcId + '-glow', type: 'line', source: srcId, paint: { 'line-color': '#4fd1a5', 'line-width': 6, 'line-opacity': 0.25 } });
+  map.addLayer({ id: srcId + '-core', type: 'line', source: srcId, paint: { 'line-color': '#4fd1a5', 'line-width': 2.5, 'line-opacity': 0.8 } });
+}
+
+async function addDrivingRoute(map, dayId, wpCoords) {
+  if (wpCoords.length < 2) return;
+  try {
+    if (routeCache[dayId]) {
+      addRouteLayersToMap(map, dayId, routeCache[dayId]);
+      return;
+    }
+    const coords = wpCoords.map(c => c[0] + ',' + c[1]).join(';');
+    const url = 'https://api.mapbox.com/directions/v5/mapbox/driving/' + coords + '?geometries=geojson&overview=full&access_token=' + mapboxgl.accessToken;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.routes && data.routes[0]) {
+      routeCache[dayId] = data.routes[0].geometry;
+      addRouteLayersToMap(map, dayId, data.routes[0].geometry);
+    } else {
+      addFallbackLine(map, dayId, wpCoords);
+    }
+  } catch (e) {
+    addFallbackLine(map, dayId, wpCoords);
+  }
+}
+
+function addFallbackLine(map, dayId, wpCoords) {
+  const srcId = 'route-' + dayId;
+  if (map.getSource(srcId)) return;
+  map.addSource(srcId, {
+    type: 'geojson',
+    data: { type: 'Feature', geometry: { type: 'LineString', coordinates: wpCoords } }
+  });
+  map.addLayer({ id: srcId + '-core', type: 'line', source: srcId, paint: { 'line-color': '#4fd1a5', 'line-width': 2.5, 'line-opacity': 0.5, 'line-dasharray': [4, 4] } });
+}
+
+async function initDayMap(day) {
   if (currentMap) { currentMap.remove(); currentMap = null; }
   if (!day || day.type === 'overview') return;
-  const el = document.getElementById('leaflet-map-' + day.id);
+  const el = document.getElementById('map-' + day.id);
   if (!el) return;
 
-  const map = L.map(el, { scrollWheelZoom: false, attributionControl: false });
-  currentTileLayer = L.tileLayer(getTileUrl(), { maxZoom: 18 }).addTo(map);
-  L.control.attribution({ prefix: false, position: 'bottomleft' })
-    .addAttribution('© <a href="https://www.openstreetmap.org/copyright">OSM</a> · <a href="https://carto.com/">CARTO</a>')
-    .addTo(map);
+  const bounds = new mapboxgl.LngLatBounds();
+  const wpCoords = []; // [lng, lat] for Mapbox
 
-  const bounds = L.latLngBounds();
-  const wpCoords = [];
+  // Collect waypoint coords
+  (day.mapWaypoints || []).forEach(wp => {
+    const c = COORDS[wp];
+    if (!c) return;
+    const lngLat = [c[1], c[0]]; // swap lat,lng → lng,lat
+    wpCoords.push(lngLat);
+    bounds.extend(lngLat);
+  });
+
+  // Collect food coords for bounds
+  let hasFoodPins = false;
+  (day.food || []).forEach(f => {
+    const c = COORDS[f.q];
+    if (c) {
+      hasFoodPins = true;
+      bounds.extend([c[1], c[0]]);
+    }
+  });
+
+  const map = new mapboxgl.Map({
+    container: el,
+    style: getMapStyle(),
+    scrollZoom: false,
+    bounds: bounds.isEmpty() ? undefined : bounds,
+    fitBoundsOptions: { padding: 40, maxZoom: 14 }
+  });
+
+  currentMap = map;
+
+  await new Promise(resolve => map.on('load', resolve));
 
   // Waypoint markers (numbered)
   (day.mapWaypoints || []).forEach((wp, i) => {
     const c = COORDS[wp];
     if (!c) return;
-    const ll = L.latLng(c[0], c[1]);
-    wpCoords.push(ll);
-    bounds.extend(ll);
+    const lngLat = [c[1], c[0]];
     const name = wp.replace(/\+/g, ' ');
-    L.marker(ll, {
-      icon: L.divIcon({
-        className: 'waypoint-marker',
-        html: '<div class="marker-dot">' + (i + 1) + '</div>',
-        iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -13]
-      })
-    }).addTo(map).bindPopup('<strong>' + name + '</strong><br><a href="' + gmapsUrl(wp) + '" target="_blank">Open in Google Maps</a>');
+
+    const markerEl = document.createElement('div');
+    markerEl.className = 'waypoint-marker';
+    markerEl.innerHTML = '<div class="marker-dot">' + (i + 1) + '</div>';
+
+    const popup = new mapboxgl.Popup({ offset: 14 })
+      .setHTML('<strong>' + name + '</strong><br><a href="' + gmapsUrl(wp) + '" target="_blank">Open in Google Maps</a>');
+
+    new mapboxgl.Marker({ element: markerEl }).setLngLat(lngLat).setPopup(popup).addTo(map);
   });
 
-  // Route polyline
-  if (wpCoords.length >= 2) {
-    L.polyline(wpCoords, { color: '#4fd1a5', weight: 2.5, dashArray: '8, 8', opacity: 0.5 }).addTo(map);
-  }
-
   // Food markers
-  let hasFoodPins = false;
   (day.food || []).forEach(f => {
     const c = COORDS[f.q];
     if (!c) return;
-    hasFoodPins = true;
-    const ll = L.latLng(c[0], c[1]);
-    bounds.extend(ll);
-    L.marker(ll, {
-      icon: L.divIcon({
-        className: 'food-pin',
-        html: '<div class="marker-dot">🍽</div>',
-        iconSize: [26, 26], iconAnchor: [13, 13], popupAnchor: [0, -13]
-      })
-    }).addTo(map).bindPopup('<strong>' + f.name + '</strong>' + (f.desc ? '<br>' + f.desc : '') + '<br><a href="' + gmapsUrl(f.q) + '" target="_blank">Open in Google Maps</a>');
+    const lngLat = [c[1], c[0]];
+
+    const markerEl = document.createElement('div');
+    markerEl.className = 'food-pin';
+    markerEl.innerHTML = '<div class="marker-dot">\u{1F37D}</div>';
+
+    const popup = new mapboxgl.Popup({ offset: 14 })
+      .setHTML('<strong>' + f.name + '</strong>' + (f.desc ? '<br>' + f.desc : '') + '<br><a href="' + gmapsUrl(f.q) + '" target="_blank">Open in Google Maps</a>');
+
+    new mapboxgl.Marker({ element: markerEl }).setLngLat(lngLat).setPopup(popup).addTo(map);
   });
 
   // Legend
   if (hasFoodPins) {
-    const legend = L.control({ position: 'topright' });
-    legend.onAdd = function() {
-      const div = L.DomUtil.create('div', 'map-legend');
-      div.innerHTML = '<span class="legend-item"><span class="legend-dot route"></span> Stops</span><span class="legend-item"><span class="legend-dot food"></span> Food</span>';
-      return div;
-    };
-    legend.addTo(map);
+    const legendEl = document.createElement('div');
+    legendEl.className = 'map-legend';
+    legendEl.style.cssText = 'position:absolute;top:10px;right:10px;z-index:1;';
+    legendEl.innerHTML = '<span class="legend-item"><span class="legend-dot route"></span> Stops</span><span class="legend-item"><span class="legend-dot food"></span> Food</span>';
+    el.parentNode.appendChild(legendEl);
   }
 
-  // Fit bounds
-  if (bounds.isValid()) {
-    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+  // Driving route
+  if (wpCoords.length >= 2) {
+    await addDrivingRoute(map, day.id, wpCoords);
   }
-
-  currentMap = map;
 }
 
 // ═══════════════════════════════════════════
@@ -1418,7 +1472,7 @@ function renderDayPage(day) {
     const directionsUrl = gmapsDirectionsUrl(day.mapWaypoints);
     html += `
       <div class="map-container">
-        <div id="leaflet-map-${day.id}" style="width:100%;height:100%"></div>
+        <div id="map-${day.id}" style="width:100%;height:100%"></div>
         <div class="map-overlay">
           <a href="${directionsUrl}" target="_blank" rel="noopener">🗺️ Open in Google Maps</a>
         </div>
@@ -1490,10 +1544,15 @@ function toggleTheme() {
   document.querySelector('.theme-toggle').textContent = next === 'light' ? '🌙' : '☀️';
   const meta = document.getElementById('themeColor');
   if (meta) meta.content = next === 'light' ? '#faf8f5' : '#0a0f0d';
-  // Swap map tiles
-  if (currentMap && currentTileLayer) {
-    currentMap.removeLayer(currentTileLayer);
-    currentTileLayer = L.tileLayer(getTileUrl(), { maxZoom: 18 }).addTo(currentMap);
+  // Swap map style
+  if (currentMap) {
+    const dayId = TRIP.days[currentDay] && TRIP.days[currentDay].id;
+    currentMap.setStyle(getMapStyle());
+    if (dayId && routeCache[dayId]) {
+      currentMap.once('style.load', () => {
+        addRouteLayersToMap(currentMap, dayId, routeCache[dayId]);
+      });
+    }
   }
 }
 
